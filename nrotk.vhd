@@ -4,7 +4,7 @@
 -- 
 -- Create Date: 11/15/2021 03:26:26 PM
 -- Design Name: 
--- Module Name: nshiftk - Behavioral
+-- Module Name: nrotk - Behavioral
 -- Project Name: 
 -- Target Devices: 
 -- Tool Versions: 
