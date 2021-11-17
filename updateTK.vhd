@@ -78,4 +78,19 @@ TK_INTERMEDIATE :
         ;
     end generate TK_INTERMEDIATE;
 
+TK_LFSR :
+    for j in 0 to 15 generate
+    
+        -- TK2 Rows 0 and 1 updated with LFSR
+        TK_p(255-8*j downto 256-8*(j+1)) <= TK_temp(254-8*j downto 256-8*(j+1)) & (TK_temp(255-8*j) xor TK_temp(253-8*j));
+        
+        -- TK3 Rows 0 and 1 updated with LFSR
+        TK_p(127-8*j downto 128-8*(j+1)) <= (TK_temp(126-8*j) xor TK_temp(128-8*(j+1))) & TK_temp(127-8*j downto 129-8*(j+1));
+    
+    end generate TK_LFSR;
+
+
+
+
+
 end Behavioral;
