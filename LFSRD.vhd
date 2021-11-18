@@ -33,7 +33,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity LFSRD is
 --  Port ( );
-port( rst, selInitial, clk, enDD : in STD_LOGIC;
+port( reset, selInitial, clk, enDD : in STD_LOGIC;
       D : out STD_LOGIC_VECTOR(55 downto 0));
        
 end LFSRD;
