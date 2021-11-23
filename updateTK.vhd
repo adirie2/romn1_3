@@ -34,7 +34,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity updateTK is
 --  Port ( );
 port (TK : in STD_LOGIC_VECTOR(383 downto 0);
-      reset, clk: in STD_LOGIC;
+      clk: in STD_LOGIC;
       TK_p : out STD_LOGIC_VECTOR(383 downto 0)
 );
 end updateTK;

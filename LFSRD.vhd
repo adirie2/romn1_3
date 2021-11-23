@@ -33,7 +33,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity LFSRD is
 --  Port ( );
-port( reset, selInitial, clk, enDD : in STD_LOGIC;
+port( selInitial, clk, enDD : in STD_LOGIC;
       D : out STD_LOGIC_VECTOR(55 downto 0));
        
 end LFSRD;
@@ -52,9 +52,7 @@ z_in <= z_initial when selInitial = '1' else z_next;
 LFSR_D : process(clk)
             begin
                 if rising_edge(clk) then
-                    if rst = '1' then
-                        z <= (others => '0');
-                    elsif enDD = '1' then
+                    if enDD = '1' then
                         z <= z_in;
                     end if;
                 end if;

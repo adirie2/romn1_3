@@ -34,7 +34,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity E_K is
 --  Port ( );
 generic(N: INTEGER := 128);
-port(reset, clk, enRound, selInitial : in STD_LOGIC;
+port(reset, clk, enRound, enTK, selInitial : in STD_LOGIC;
      S, K, T : in STD_LOGIC_VECTOR(N-1 downto 0);
      B : in STD_LOGIC_VECTOR(7 downto 0);
      D : in STD_LOGIC_VECTOR(55 downto 0);
@@ -70,7 +70,7 @@ TK_REG : process(clk)
                 if rising_edge(clk) then
                     if reset = '1' then
                         TK <= (others => '0');
-                    elsif enRound = '1' then
+                    elsif enTK = '1' then
                         TK <= TK_next;
                     end if;
                 end if;

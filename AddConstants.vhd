@@ -35,7 +35,7 @@ entity AddConstants is
 --  Port ( );
 port (InS : IN STD_LOGIC_VECTOR(127 downto 0);
       InS_p : OUT STD_LOGIC_VECTOR(127 downto 0);
-      reset, clk, enRound, selInitial : IN STD_LOGIC);
+      clk, enRound, selInitial : IN STD_LOGIC);
 end AddConstants;
 
 architecture Behavioral of AddConstants is
@@ -54,9 +54,7 @@ begin
 rc_reg : process(clk)
             begin
             if rising_edge(clk) then
-                if reset = '1' then
-                    rc <= (others => '0');
-                elsif enRound = '1' then
+                if enRound = '1' then
                     rc <= rc_next;
                 end if;
             end if;
