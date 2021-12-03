@@ -53,13 +53,13 @@ TK_INTERMEDIATE :
         -- Cells 0 to 7 for each TK take this permutation
         TK_temp(383-128*i downto 320-128*i) <= 
         -- 9
-            TK(311-128*i downto 320-128*i)
+            TK(311-128*i downto 304-128*i)
            & 
         -- 15
-            TK(263-128*i downto 304-128*i)
+            TK(263-128*i downto 256-128*i)
            &
         -- 8
-            TK(319-128*i downto 256-128*i)
+            TK(319-128*i downto 312-128*i)
            &
         -- 13
             TK(279-128*i downto 272-128*i)
@@ -68,7 +68,7 @@ TK_INTERMEDIATE :
             TK(303-128*i downto 296-128*i)
            &
         -- 14
-            TK(273-128*i downto 266-128*i)
+            TK(271-128*i downto 264-128*i)
            &
         -- 12
             TK(287-128*i downto 280-128*i)
@@ -81,14 +81,29 @@ TK_INTERMEDIATE :
 TK_LFSR :
     for j in 0 to 15 generate
     
-        -- TK2 Rows 0 and 1 updated with LFSR
-        TK_p(255-8*j downto 256-8*(j+1)) <= TK_temp(254-8*j downto 256-8*(j+1)) & (TK_temp(255-8*j) xor TK_temp(253-8*j));
+        TK_GEN_LFSR : if j < 8 generate
         
-        -- TK3 Rows 0 and 1 updated with LFSR
-        TK_p(127-8*j downto 128-8*(j+1)) <= (TK_temp(126-8*j) xor TK_temp(128-8*(j+1))) & TK_temp(127-8*j downto 129-8*(j+1));
-    
+            -- TK2 Rows 0 and 1 updated with LFSR
+            TK_p(255-8*j downto 256-8*(j+1)) <= TK_temp(254-8*j downto 256-8*(j+1)) & (TK_temp(255-8*j) xor TK_temp(253-8*j));
+            
+            -- TK3 Rows 0 and 1 updated with LFSR
+            TK_p(127-8*j downto 128-8*(j+1)) <= (TK_temp(126-8*j) xor TK_temp(128-8*(j+1))) & TK_temp(127-8*j downto 129-8*(j+1));
+        
+        end generate TK_GEN_LFSR;
+        
+        TK_GEN_OTHER_CELLS : if j >= 8 generate
+            
+            -- TK2 Rows 2 and 3 retain value
+            TK_p(255-8*j downto 256-8*(j+1)) <= TK_temp(255-8*j downto 256-8*(j+1));
+            
+            -- TK3 Rows 2 and 3 retain value
+            TK_p(127-8*j downto 128-8*(j+1)) <= TK_temp(127-8*j downto 128-8*(j+1));
+        end generate TK_GEN_OTHER_CELLS;
+        
     end generate TK_LFSR;
 
+-- TK1 does not get updated with LFSR so we retain value from previous operation
+TK_p(383 downto 256) <= TK_temp(383 downto 256);
 
 
 

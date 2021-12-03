@@ -35,7 +35,7 @@ entity AddConstants is
 --  Port ( );
 port (InS : IN STD_LOGIC_VECTOR(127 downto 0);
       InS_p : OUT STD_LOGIC_VECTOR(127 downto 0);
-      clk, enRound, selInitial : IN STD_LOGIC);
+      clk, enAC, selInitial : IN STD_LOGIC);
 end AddConstants;
 
 architecture Behavioral of AddConstants is
@@ -44,17 +44,17 @@ signal rc, rc_p, rc_next : STD_LOGIC_VECTOR(5 downto 0);
 begin
 
 -- Values Necessary for LFSR
- rc_p <= rc(4) & rc(3) & rc(2) & rc(0) & (rc(5) xor rc(4) xor '1');
+ rc_p <= rc(4) & rc(3) & rc(2) & rc(1) & rc(0) & (rc(5) xor rc(4) xor '1');
  c0 <= "0000" & rc(3) & rc(2) & rc(1) & rc(0);
- c1 <= "000000" & rc(3) & rc(2) & rc(1) & rc(0);
- c2 <= "000000" & x"02";
+ c1 <= "000000" & rc(5) & rc(4);
+ c2 <= "00000010";
  rc_next <= (others => '0') when selInitial='1' else rc_p;
  
 -- LFSR for AddConstants
 rc_reg : process(clk)
             begin
             if rising_edge(clk) then
-                if enRound = '1' then
+                if enAC = '1' then
                     rc <= rc_next;
                 end if;
             end if;

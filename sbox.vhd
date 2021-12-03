@@ -34,13 +34,14 @@ use IEEE.numeric_std.all;
 entity sbox is
 --  Port ( );
 
-Port(Addr: in std_logic_vector(7 downto 0);
+Port(
+     clk : in std_logic;
+     Addr: in std_logic_vector(7 downto 0);
      Y : out std_logic_vector(7 downto 0));
 end sbox;
 
 architecture Behavioral of sbox is
 type rom_memory is array (0 to 255) of std_logic_vector(7 downto 0);
-signal int_addr: INTEGER RANGE 0 to 255;
 constant sbox_rom : rom_memory := (
 -- Row 1
 x"65" ,x"4c" ,x"6a" ,x"42" ,x"4b" ,x"63" ,x"43" ,x"6b" ,x"55" ,x"75" ,x"5a" ,x"7a" ,x"53" ,x"73" ,x"5b" ,x"7b" ,
@@ -75,8 +76,12 @@ x"a2" ,x"18" ,x"ae" ,x"16" ,x"1f" ,x"a7" ,x"17" ,x"af" ,x"01" ,x"b2" ,x"0e" ,x"b
 -- Row 16
 x"e2" ,x"ca" ,x"ee" ,x"c6" ,x"cf" ,x"e7" ,x"c7" ,x"ef" ,x"d2" ,x"f2" ,x"de" ,x"fe" ,x"d7" ,x"f7" ,x"df" ,x"ff");
 begin
+process(clk)
+    begin
+    if rising_edge(clk) then
+    Y <= sbox_rom(to_integer(unsigned(Addr))); 
+    end if;
+end process;
 
-int_addr <= to_integer(unsigned(Addr));
-Y <= sbox_rom(int_addr); 
 
 end Behavioral;

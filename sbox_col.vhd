@@ -42,11 +42,13 @@ type Sdata is array (0 to 4) of STD_LOGIC_VECTOR(7 downto 0);
 signal Sout : Sdata;
 begin
 Sout(0) <= Addr;
-GEN_SBOXCOL : for i in 1 to 4 generate
+GEN_SBOXCOL : for i in 1 to 3 generate
     -- Did the Transformation then the Permutation all in one step
     Sout(i) <= Sout(i-1)(2) & Sout(i-1)(1) & Sout(i-1)(7) & Sout(i-1)(6) & (Sout(i-1)(4) xor (Sout(i-1)(7) nor Sout(i-1)(6)))
                & (Sout(i-1)(0) xor (Sout(i-1)(3) nor Sout(i-1)(2))) & Sout(i-1)(3) & Sout(i-1)(5);
 end generate GEN_SBOXCOL;
-Y <= Sout(4)(7 downto 3) & Sout(4)(1) & Sout(4)(2) & Sout(4)(0);
+
+Y <= Sout(3)(7) & Sout(3)(6) & Sout(3)(5) & (Sout(3)(4) xor (Sout(3)(7) nor Sout(3)(6))) & Sout(3)(3) & Sout(3)(1) & Sout(3)(2)
+        & (Sout(3)(0) xor (Sout(3)(3) nor Sout(3)(2)));
 
 end Behavioral;

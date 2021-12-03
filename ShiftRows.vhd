@@ -45,11 +45,13 @@ begin
         -- we only apply rotator on row 1, row 2, and row 3. not on row 0
     
         GEN_EACH_SHIFTER: entity work.nrotk 
-            generic map(K => i) -- rotation by i 
+            generic map(N => 32, -- Width is 32
+                        K => 8*i) -- rotation by 8 * i or i bytes 
             port map(D => InS(127-32*i downto 128-32*(i+1)), -- Map each respect row with i
                      Q => InS_p(127-32*i downto 128-32*(i+1)));
   
     end generate GEN_SHIFTERS;
-
+-- first row is not rotated at all    
+InS_p(127 downto 96) <= InS(127 downto 96);
 
 end Behavioral;

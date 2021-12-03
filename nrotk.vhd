@@ -50,7 +50,7 @@ begin
     end generate GEN_RIGHT;
     
     GEN_LEFT: if ROT /= 1 generate
-    Q <= D(N-K downto 0) & D(N downto N-K+1);
+    Q <= D(N-K downto 0) & D(N-1 downto N-K+1);
     end generate GEN_LEFT;
 
 end Behavioral;

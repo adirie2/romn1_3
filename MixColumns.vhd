@@ -43,9 +43,8 @@ begin
 GEN_MIX_COLS: for i in 0 to 3 generate
 
     -- ROW 0
-    InS_p(127-8*i downto 128-8*(i+1)) <= InS(127-8*i downto 128-8*(i+1))
-                                     xor InS(63-8*i downto 64-8*(i+1))
-                                     xor InS(31-8*i downto 32-8*(i+1));
+    InS_p(127-8*i downto 128-8*(i+1)) <= InS(127-8*i downto 128-8*(i+1)) xor InS(63-8*i downto 64-8*(i+1))
+              xor InS(31-8*i downto 32-8*(i+1));
     -- ROW 1                              
     InS_p(95-8*i downto 96-8*(i+1)) <= InS(127-8*i downto 128-8*(i+1));
     

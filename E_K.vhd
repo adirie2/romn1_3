@@ -33,8 +33,9 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity E_K is
 --  Port ( );
-generic(N: INTEGER := 128);
-port(reset, clk, enRound, enTK, selInitial : in STD_LOGIC;
+generic(N: INTEGER := 128;
+        TESTING : NATURAL := 0);
+port(clk, enAC, enIS, enTK, selInitial : in STD_LOGIC;
      S, K, T : in STD_LOGIC_VECTOR(N-1 downto 0);
      B : in STD_LOGIC_VECTOR(7 downto 0);
      D : in STD_LOGIC_VECTOR(55 downto 0);
@@ -50,15 +51,20 @@ begin
 -- Muxes for Input to Registers
 
 InS_next <= S when selInitial = '1' else InS_MC;
+TK_NEXT_GEN_REAL : if TESTING /= 1 GENERATE
 TK_next <= D & B & x"0000000000000000" & T & K when selInitial = '1' else TK_p;
+end GENERATE TK_NEXT_GEN_REAL;
+
+TK_NEXT_GEN_TESTING : if TESTING = 1 GENERATE
+TK_next <= x"df889548cfc7ea52d296339301797449ab588a34a47f1ab2dfe9c8293fbea9a5ab1afac2611012cd8cef952618c3ebe8" when selInitial = '1' else TK_p;
+-- TK_next <= (others => '0') when selInitial = '1' else TK_p;
+end GENERATE TK_NEXT_GEN_TESTING;
 
 -- Process Register for Internal State
 InS_REG : process(clk)
             begin
                 if rising_edge(clk) then
-                    if reset = '1' then
-                        InS <= (others => '0');
-                    elsif enRound = '1' then
+                    if enIS = '1' then
                         InS <= InS_next;
                     end if;
                 end if;
@@ -68,9 +74,7 @@ InS_REG : process(clk)
 TK_REG : process(clk)
             begin
                 if rising_edge(clk) then
-                    if reset = '1' then
-                        TK <= (others => '0');
-                    elsif enTK = '1' then
+                    if enTK = '1' then
                         TK <= TK_next;
                     end if;
                 end if;
@@ -81,14 +85,18 @@ TK_REG : process(clk)
 INSTANTIATE_UPDATE_TK : entity work.updateTK 
     port map (TK => TK,
               TK_p => TK_p,
-              clk => clk,
-              reset => reset);
+              clk => clk);
               
 -- Connect Internal State to all Round Functions by Instantiation of Components
 
 -- SubCells Instantiation
 
-INSTANTIATE_SUBCELLS : entity work.SubCells
+--INSTANTIATE_SUBCELLS_ROM : entity work.SubCellsRom
+--    port map (clk => clk,
+--              InS => InS,
+--              InS_p => InS_SC);
+              
+ INSTANTIATE_SUBCELLS_COL : entity work.SubCells  
     port map (InS => InS,
               InS_p => InS_SC);
               
@@ -96,10 +104,9 @@ INSTANTIATE_SUBCELLS : entity work.SubCells
 INSTANTIATE_ADDCONSTANTS : entity work.AddConstants
     port map (InS => InS_SC,
               InS_p => InS_AC,
-              enRound => enRound,
+              enAC => enAC,
               selInitial => selInitial,
-              clk => clk,
-              reset => reset);
+              clk => clk);
 
 -- AddRoundTweakey Instantiation
 INSTANTIATE_ADDROUNDTWEAKEY : entity work.AddRoundTweakey

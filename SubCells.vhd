@@ -32,7 +32,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 --use UNISIM.VComponents.all;
 
 entity SubCells is
-  Port ( InS: in STD_LOGIC_VECTOR(127 downto 0);
+  Port (
+         InS: in STD_LOGIC_VECTOR(127 downto 0);
          InS_p : out STD_LOGIC_VECTOR(127 downto 0) );
 end SubCells;
 architecture Behavioral of SubCells is
@@ -41,7 +42,8 @@ begin
 GEN_SBOX : for i in 0 to 15 generate
 
     SBOX_GEN : entity work.sbox_col
-    port map(Addr => InS(127-8*i downto 128-8*(i+1)),
+    port map(
+            Addr => InS(127-8*i downto 128-8*(i+1)),
              Y => InS_p(127-8*i downto 128-8*(i+1)));
 
 end generate GEN_SBOX;
