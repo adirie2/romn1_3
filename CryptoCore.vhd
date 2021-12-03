@@ -59,9 +59,12 @@ end CryptoCore;
 
 architecture Behavioral of CryptoCore is
 -- Intermediate Signals for Interface Division between Datapath and Controller
-signal Bin : std_logic_vector(3 downto 0);
+signal Bin : std_logic_vector(4 downto 0);
+signal E_start : std_logic;
 signal selInitial, selS, selSR, selD, selT : std_logic;
-signal enRound, enTK, enKey, enAM, enN, enS, enDD, enCi_T : std_logic;
+signal enKey, enAM, enN, enS, enDD, enCi_T, enTag : std_logic;
+signal ldCi_T : std_logic;
+signal E_done : std_logic;
 -- Intermediate Signals to avoid signal assignment of output appearing on right hand side of signal assignment
 signal bdo_i : std_logic_vector(CCW-1 downto 0);
 signal bdo_type_i : std_logic_vector(3 downto 0);
@@ -87,19 +90,21 @@ INSTANTIATE_DATAPATH: entity work.datapath
               bdi_pad_loc => bdi_pad_loc,
               bdo => bdo_i,
               Bin => Bin,
+              ldCi_T => ldCi_T,
+              E_start => E_start,
               selInitial => selInitial,
               selS => selS,
               selSR => selSR,
               selD => selD,
               selT => selT,
-              enRound => enRound,
-              enTK => enTK,
               enKey => enKey,
               enAM => enAM,
               enN => enN,
               enS => enS,
               enDD => enDD,
-              enCi_T => enCi_T);
+              enCi_T => enCi_T,
+              enTag => enTag,
+              E_done => E_done);
               
 
 INSTANTIATE_CONTROLLER: entity work.controller
@@ -123,18 +128,17 @@ INSTANTIATE_CONTROLLER: entity work.controller
               bdo_type => bdo_type_i,
               bdo_valid_bytes => bdo_valid_bytes_i,
               Bin => Bin,
-              selInitial => selInitial,
+              ldCi_T => ldCi_T,
               selS => selS,
               selSR => selSR,
               selD => selD,
               selT => selT,
-              enRound => enRound,
-              enTK => enTK,
               enKey => enKey,
               enAM => enAM,
               enN => enN,
               enS => enS,
               enDD => enDD,
-              enCi_T => enCi_T);
+              enCi_T => enCi_T,
+              enTag => enTag);
 
 end Behavioral;
