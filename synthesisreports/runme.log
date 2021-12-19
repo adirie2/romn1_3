@@ -1,0 +1,289 @@
+
+*** Running vivado
+    with args -log datapath.vds -m64 -product Vivado -mode batch -messageDb vivado.pb -notrace -source datapath.tcl
+
+
+****** Vivado v2020.2 (64-bit)
+  **** SW Build 3064766 on Wed Nov 18 09:12:47 MST 2020
+  **** IP Build 3064653 on Wed Nov 18 14:17:31 MST 2020
+    ** Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+
+source datapath.tcl -notrace
+Command: synth_design -top datapath -part xc7a35tcsg324-1
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7a35t'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7a35t'
+INFO: [Device 21-403] Loading part xc7a35tcsg324-1
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 4 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 26081
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:04 ; elapsed = 00:00:04 . Memory (MB): peak = 2293.340 ; gain = 0.000 ; free physical = 1488 ; free virtual = 9062
+---------------------------------------------------------------------------------
+INFO: [Synth 8-638] synthesizing module 'datapath' [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/datapath.vhd:59]
+	Parameter CCSW bound to: 32 - type: integer 
+	Parameter CCW bound to: 32 - type: integer 
+	Parameter CCWdiv8 bound to: 4 - type: integer 
+	Parameter N bound to: 128 - type: integer 
+INFO: [Synth 8-638] synthesizing module 'rho' [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/rho.vhd:42]
+INFO: [Synth 8-638] synthesizing module 'gs' [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/gs.vhd:39]
+INFO: [Synth 8-256] done synthesizing module 'gs' (1#1) [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/gs.vhd:39]
+INFO: [Synth 8-256] done synthesizing module 'rho' (2#1) [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/rho.vhd:42]
+INFO: [Synth 8-638] synthesizing module 'EK_Skinnyromn' [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/EK_Skinnyromn.vhd:45]
+INFO: [Synth 8-638] synthesizing module 'E_K' [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/E_K.vhd:46]
+	Parameter N bound to: 128 - type: integer 
+	Parameter TESTING bound to: 0 - type: integer 
+INFO: [Synth 8-638] synthesizing module 'updateTK' [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/updateTK.vhd:42]
+INFO: [Synth 8-256] done synthesizing module 'updateTK' (3#1) [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/updateTK.vhd:42]
+INFO: [Synth 8-638] synthesizing module 'SubCells' [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/SubCells.vhd:39]
+INFO: [Synth 8-638] synthesizing module 'sbox_col' [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/sbox_col.vhd:40]
+INFO: [Synth 8-256] done synthesizing module 'sbox_col' (4#1) [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/sbox_col.vhd:40]
+INFO: [Synth 8-256] done synthesizing module 'SubCells' (5#1) [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/SubCells.vhd:39]
+INFO: [Synth 8-638] synthesizing module 'AddConstants' [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/AddConstants.vhd:41]
+INFO: [Synth 8-256] done synthesizing module 'AddConstants' (6#1) [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/AddConstants.vhd:41]
+INFO: [Synth 8-638] synthesizing module 'AddRoundTweakey' [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/AddRoundTweakey.vhd:42]
+INFO: [Synth 8-256] done synthesizing module 'AddRoundTweakey' (7#1) [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/AddRoundTweakey.vhd:42]
+INFO: [Synth 8-638] synthesizing module 'ShiftRows' [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/ShiftRows.vhd:41]
+	Parameter N bound to: 128 - type: integer 
+INFO: [Synth 8-638] synthesizing module 'nrotk' [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/nrotk.vhd:44]
+	Parameter N bound to: 32 - type: integer 
+	Parameter K bound to: 8 - type: integer 
+	Parameter ROT bound to: 1 - type: integer 
+INFO: [Synth 8-256] done synthesizing module 'nrotk' (8#1) [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/nrotk.vhd:44]
+INFO: [Synth 8-638] synthesizing module 'nrotk__parameterized0' [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/nrotk.vhd:44]
+	Parameter N bound to: 32 - type: integer 
+	Parameter K bound to: 16 - type: integer 
+	Parameter ROT bound to: 1 - type: integer 
+INFO: [Synth 8-256] done synthesizing module 'nrotk__parameterized0' (8#1) [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/nrotk.vhd:44]
+INFO: [Synth 8-638] synthesizing module 'nrotk__parameterized1' [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/nrotk.vhd:44]
+	Parameter N bound to: 32 - type: integer 
+	Parameter K bound to: 24 - type: integer 
+	Parameter ROT bound to: 1 - type: integer 
+INFO: [Synth 8-256] done synthesizing module 'nrotk__parameterized1' (8#1) [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/nrotk.vhd:44]
+INFO: [Synth 8-256] done synthesizing module 'ShiftRows' (9#1) [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/ShiftRows.vhd:41]
+INFO: [Synth 8-638] synthesizing module 'MixColumns' [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/MixColumns.vhd:40]
+INFO: [Synth 8-256] done synthesizing module 'MixColumns' (10#1) [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/MixColumns.vhd:40]
+INFO: [Synth 8-256] done synthesizing module 'E_K' (11#1) [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/E_K.vhd:46]
+INFO: [Synth 8-638] synthesizing module 'E_K_controller' [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/E_K_controller.vhd:46]
+INFO: [Synth 8-256] done synthesizing module 'E_K_controller' (12#1) [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/E_K_controller.vhd:46]
+INFO: [Synth 8-256] done synthesizing module 'EK_Skinnyromn' (13#1) [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/EK_Skinnyromn.vhd:45]
+INFO: [Synth 8-638] synthesizing module 'LFSRD' [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/LFSRD.vhd:41]
+INFO: [Synth 8-256] done synthesizing module 'LFSRD' (14#1) [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/LFSRD.vhd:41]
+INFO: [Synth 8-256] done synthesizing module 'datapath' (15#1) [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/datapath.vhd:59]
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 2293.340 ; gain = 0.000 ; free physical = 2210 ; free virtual = 9785
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 2293.340 ; gain = 0.000 ; free physical = 2268 ; free virtual = 9843
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 2293.340 ; gain = 0.000 ; free physical = 2268 ; free virtual = 9843
+---------------------------------------------------------------------------------
+Netlist sorting complete. Time (s): cpu = 00:00:00.02 ; elapsed = 00:00:00.03 . Memory (MB): peak = 2293.340 ; gain = 0.000 ; free physical = 2261 ; free virtual = 9836
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/constrs_1/new/cnstrnt.xdc]
+Finished Parsing XDC File [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/constrs_1/new/cnstrnt.xdc]
+Completed Processing XDC Constraints
+
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.01 . Memory (MB): peak = 2325.277 ; gain = 0.000 ; free physical = 2173 ; free virtual = 9747
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00.03 ; elapsed = 00:00:00.01 . Memory (MB): peak = 2325.277 ; gain = 0.000 ; free physical = 2173 ; free virtual = 9748
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:10 ; elapsed = 00:00:12 . Memory (MB): peak = 2325.277 ; gain = 31.938 ; free physical = 2244 ; free virtual = 9818
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7a35tcsg324-1
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:10 ; elapsed = 00:00:12 . Memory (MB): peak = 2325.277 ; gain = 31.938 ; free physical = 2244 ; free virtual = 9818
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying 'set_property' XDC Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:10 ; elapsed = 00:00:12 . Memory (MB): peak = 2325.277 ; gain = 31.938 ; free physical = 2244 ; free virtual = 9818
+---------------------------------------------------------------------------------
+INFO: [Synth 8-802] inferred FSM for state register 'state_reg_reg' in module 'E_K_controller'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+                  e_idle |                               00 |                               00
+                e_before |                               01 |                               01
+               e_compute |                               10 |                               10
+                e_finish |                               11 |                               11
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'state_reg_reg' using encoding 'sequential' in module 'E_K_controller'
+WARNING: [Synth 8-327] inferring latch for variable 'cnt_s_next_reg' [/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.srcs/sources_1/new/E_K_controller.vhd:56]
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:11 ; elapsed = 00:00:12 . Memory (MB): peak = 2325.277 ; gain = 31.938 ; free physical = 2246 ; free virtual = 9809
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input    6 Bit       Adders := 1     
++---XORs : 
+	   2 Input    128 Bit         XORs := 2     
+	   4 Input     32 Bit         XORs := 2     
+	   2 Input      8 Bit         XORs := 15    
+	   2 Input      1 Bit         XORs := 163   
+	   3 Input      1 Bit         XORs := 1     
++---Registers : 
+	              384 Bit    Registers := 1     
+	              128 Bit    Registers := 6     
+	               56 Bit    Registers := 1     
+	                6 Bit    Registers := 2     
++---Muxes : 
+	   2 Input  384 Bit        Muxes := 1     
+	   2 Input  128 Bit        Muxes := 4     
+	   2 Input   32 Bit        Muxes := 1     
+	   4 Input    6 Bit        Muxes := 1     
+	   4 Input    2 Bit        Muxes := 1     
+	   2 Input    2 Bit        Muxes := 1     
+	   3 Input    2 Bit        Muxes := 1     
+	   2 Input    1 Bit        Muxes := 5     
+	   4 Input    1 Bit        Muxes := 5     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 90 (col length:60)
+BRAMs: 100 (col length: RAMB18 60 RAMB36 30)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:13 ; elapsed = 00:00:15 . Memory (MB): peak = 2325.277 ; gain = 31.938 ; free physical = 2232 ; free virtual = 9799
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:19 ; elapsed = 00:00:21 . Memory (MB): peak = 2325.277 ; gain = 31.938 ; free physical = 2117 ; free virtual = 9684
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:21 ; elapsed = 00:00:23 . Memory (MB): peak = 2325.277 ; gain = 31.938 ; free physical = 2082 ; free virtual = 9649
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:21 ; elapsed = 00:00:24 . Memory (MB): peak = 2325.277 ; gain = 31.938 ; free physical = 2082 ; free virtual = 9649
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:24 ; elapsed = 00:00:26 . Memory (MB): peak = 2325.277 ; gain = 31.938 ; free physical = 2113 ; free virtual = 9652
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:24 ; elapsed = 00:00:26 . Memory (MB): peak = 2325.277 ; gain = 31.938 ; free physical = 2113 ; free virtual = 9652
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:25 ; elapsed = 00:00:27 . Memory (MB): peak = 2325.277 ; gain = 31.938 ; free physical = 2113 ; free virtual = 9652
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:25 ; elapsed = 00:00:27 . Memory (MB): peak = 2325.277 ; gain = 31.938 ; free physical = 2113 ; free virtual = 9652
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:25 ; elapsed = 00:00:27 . Memory (MB): peak = 2325.277 ; gain = 31.938 ; free physical = 2113 ; free virtual = 9652
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:25 ; elapsed = 00:00:27 . Memory (MB): peak = 2325.277 ; gain = 31.938 ; free physical = 2113 ; free virtual = 9652
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+-----+------+
+|      |Cell |Count |
++------+-----+------+
+|1     |BUFG |     1|
+|2     |LUT2 |    36|
+|3     |LUT3 |   248|
+|4     |LUT4 |   331|
+|5     |LUT5 |   245|
+|6     |LUT6 |    68|
+|7     |FDRE |  1221|
+|8     |FDSE |     1|
+|9     |LD   |     6|
+|10    |IBUF |    83|
+|11    |OBUF |    33|
++------+-----+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:25 ; elapsed = 00:00:27 . Memory (MB): peak = 2325.277 ; gain = 31.938 ; free physical = 2113 ; free virtual = 9652
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 1 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:23 ; elapsed = 00:00:25 . Memory (MB): peak = 2325.277 ; gain = 0.000 ; free physical = 2166 ; free virtual = 9705
+Synthesis Optimization Complete : Time (s): cpu = 00:00:25 ; elapsed = 00:00:27 . Memory (MB): peak = 2325.285 ; gain = 31.938 ; free physical = 2166 ; free virtual = 9705
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00.02 ; elapsed = 00:00:00.02 . Memory (MB): peak = 2325.285 ; gain = 0.000 ; free physical = 2252 ; free virtual = 9791
+INFO: [Netlist 29-17] Analyzing 6 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 2325.285 ; gain = 0.000 ; free physical = 2201 ; free virtual = 9737
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 6 instances were transformed.
+  LD => LDCE: 6 instances
+
+INFO: [Common 17-83] Releasing license: Synthesis
+50 Infos, 1 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:34 ; elapsed = 00:00:32 . Memory (MB): peak = 2325.285 ; gain = 32.023 ; free physical = 2364 ; free virtual = 9900
+INFO: [Common 17-1381] The checkpoint '/home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.runs/synth_1/datapath.dcp' has been generated.
+INFO: [runtcl-4] Executing : report_utilization -file datapath_utilization_synth.rpt -pb datapath_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Mon Dec  6 04:31:51 2021...

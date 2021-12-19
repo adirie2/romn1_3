@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2020.2 (64-bit)
+# SW Build 3064766 on Wed Nov 18 09:12:47 MST 2020
+# IP Build 3064653 on Wed Nov 18 14:17:31 MST 2020
+# Start of session at: Mon Dec  6 04:31:55 2021
+# Process ID: 26254
+# Current directory: /home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.runs/impl_1
+# Command line: vivado -log datapath.vdi -applog -product Vivado -messageDb vivado.pb -mode batch -source datapath.tcl -notrace
+# Log file: /home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.runs/impl_1/datapath.vdi
+# Journal file: /home/aadam/Documents/school/masters/ECE545/romulus_n_v1_3_initial/romulus_n_v1_3_initial.runs/impl_1/vivado.jou
+#-----------------------------------------------------------
+source datapath.tcl -notrace
