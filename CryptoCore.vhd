@@ -61,10 +61,13 @@ architecture Behavioral of CryptoCore is
 -- Intermediate Signals for Interface Division between Datapath and Controller
 signal Bin : std_logic_vector(4 downto 0);
 signal E_start : std_logic;
-signal selInitial, selS, selSR, selD, selT : std_logic;
+signal selS, selSR, selD, selT, selMR : std_logic;
+signal selAM : std_logic_vector(1 downto 0);
 signal enKey, enAM, enN, enS, enDD, enCi_T, enTag : std_logic;
 signal ldCi_T : std_logic;
 signal E_done : std_logic;
+signal tag_verify : std_logic;
+signal len8 : std_logic_vector(7 downto 0);
 -- Intermediate Signals to avoid signal assignment of output appearing on right hand side of signal assignment
 signal bdo_i : std_logic_vector(CCW-1 downto 0);
 signal bdo_type_i : std_logic_vector(3 downto 0);
@@ -81,22 +84,39 @@ msg_auth_valid <= msg_auth_valid_i;
 bdi_ready <= bdi_ready_i;
 -- Instantiate Datapath
 
+--clk : in STD_LOGIC;
+--      -- INPUTS FROM CRYPTO CORE
+--      key : in STD_LOGIC_VECTOR(CCSW-1 downto 0);
+--      bdi: in STD_LOGIC_VECTOR(CCW-1 downto 0);
+--      bdi_valid_bytes, bdi_pad_loc : in STD_LOGIC_VECTOR(CCWdiv8-1 downto 0);
+--      -- INPUTS FROM CONTROLLER
+--      E_start : in STD_LOGIC;
+--      selDD, selS, selSR, selD, selT, selAM, selMR : in STD_LOGIC;
+--      enKey, enAM, enN, enS, enDD, enCi_T, enTag : in STD_LOGIC;
+--      Bin : in STD_LOGIC_VECTOR(4 downto 0);
+--      ldCi_T : in STD_LOGIC;
+--      -- OUTPUTS INTO CONTROLLER
+--      E_done : out STD_LOGIC;
+--      -- OUTPUTS INTO CRYPTOCORE
+--      bdo : out STD_LOGIC_VECTOR(CCW-1 downto 0)
+
 INSTANTIATE_DATAPATH: entity work.datapath
     port map (
               clk => clk,
               key => key,
               bdi => bdi,
-              bdi_valid_bytes => bdi_valid_bytes,
-              bdi_pad_loc => bdi_pad_loc,
+              -- bdi_pad_loc => bdi_pad_loc,
+              len8 => len8,
               bdo => bdo_i,
               Bin => Bin,
               ldCi_T => ldCi_T,
               E_start => E_start,
-              selInitial => selInitial,
               selS => selS,
               selSR => selSR,
               selD => selD,
               selT => selT,
+              selAM => selAM,
+              selMR => selMR,
               enKey => enKey,
               enAM => enAM,
               enN => enN,
@@ -104,7 +124,8 @@ INSTANTIATE_DATAPATH: entity work.datapath
               enDD => enDD,
               enCi_T => enCi_T,
               enTag => enTag,
-              E_done => E_done);
+              E_done => E_done,
+              tag_verify => tag_verify);
               
 
 INSTANTIATE_CONTROLLER: entity work.controller
@@ -119,6 +140,7 @@ INSTANTIATE_CONTROLLER: entity work.controller
               bdo_ready => bdo_ready,
               key_update => key_update,
               key_valid => key_valid,
+              key_ready => key_ready,
               bdi_valid => bdi_valid,
               end_of_block => end_of_block_i,
               bdo_valid => bdo_valid_i,
@@ -128,17 +150,23 @@ INSTANTIATE_CONTROLLER: entity work.controller
               bdo_type => bdo_type_i,
               bdo_valid_bytes => bdo_valid_bytes_i,
               Bin => Bin,
+              E_start => E_start,
               ldCi_T => ldCi_T,
               selS => selS,
               selSR => selSR,
               selD => selD,
               selT => selT,
+              selAM => selAM,
+              selMR => selMR,
               enKey => enKey,
               enAM => enAM,
               enN => enN,
               enS => enS,
               enDD => enDD,
               enCi_T => enCi_T,
-              enTag => enTag);
+              enTag => enTag,
+              tag_verify => tag_verify,
+              E_done => E_done,
+              len8 => len8);
 
 end Behavioral;
