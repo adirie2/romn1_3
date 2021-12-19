@@ -66,7 +66,7 @@ E_NEXT_STATE : process(cnt_s, state_reg, E_start)
         enAC <= '0';
         E_done <= '0';
         enIS <= '0';
-        case state_next is
+        case state_reg is
             
             when E_idle =>
                 if E_start = '1' then

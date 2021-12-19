@@ -101,7 +101,7 @@ E_K_FUNCTION_INSTANTIATION_TB : entity work.E_K
               S_E => S_E);
  LFSRD_FUNCTION_INSTANTIATION_TB : entity work.LFSRD
       port map(clk => clk,
-               selInitial => selInitial,
+               selDD => selInitial,
                enDD => enDD,
                D => D);
                

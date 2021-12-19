@@ -43,13 +43,15 @@ port (clk, E_start : in STD_LOGIC;
 end EK_Skinnyromn;
 
 architecture Behavioral of EK_Skinnyromn is
-signal selInitial, enTK, enRound, enIS, enAC : std_logic;
+signal selInitial, enTK, enRound, enIS, enAC, e_done_i : std_logic;
 
 
 begin
 
+e_done <= e_done_i;
+
 E_K_FUNCTION : entity work.E_K
-     generic map (TESTING => 1)
+     generic map (TESTING => 0)
      port map(clk => clk,
               enIS => enIS,
               enAC => enAC,
@@ -65,7 +67,7 @@ E_K_FUNCTION : entity work.E_K
 E_K_CONTROLLER : entity work.E_K_controller
     port map(clk => clk,
              e_start => e_start,
-             e_done => e_done,
+             e_done => e_done_i,
              selInitial => selInitial,
              enTK => enTK,
              enRound => enRound,
