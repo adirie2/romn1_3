@@ -33,7 +33,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity LFSRD is
 --  Port ( );
-port( selInitial, clk, enDD : in STD_LOGIC;
+port( selDD, clk, enDD : in STD_LOGIC;
       D : out STD_LOGIC_VECTOR(55 downto 0));
        
 end LFSRD;
@@ -46,7 +46,7 @@ z_initial <= ( 48 => '1',
                
 z_next <= z(54 downto 7) & (z(6) xor z(55)) & z(5 downto 4) & (z(3) xor z(55)) & z(2) & (z(1) xor z(55)) & z(0) & (z(55)); 
 
-z_in <= z_initial when selInitial = '1' else z_next;
+z_in <= z_initial when selDD = '1' else z_next;
 
 -- Process for LFSR_D
 LFSR_D : process(clk)
