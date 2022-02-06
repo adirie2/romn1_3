@@ -1,1 +1,0 @@
-create_clock -add -name sys_clk_pin -period 4.25 -waveform {0 2.125} [get_ports clk]
