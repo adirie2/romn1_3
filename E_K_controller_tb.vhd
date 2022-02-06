@@ -76,14 +76,6 @@ E_K_CONTROLLER_INSTANTIATION_TB : entity work.E_K_controller
              enRound => enRound,
              enIS => enIS,
              enAC => enAC);
--- Testing Add Constants Component
-
---AC_INSTANTIATION : entity work.AddConstants
---    port map(clk => clk,
---             enRound => enAC,
---             selInitial => selInitial,
---             InS => InS,
---             InS_p => InS_p);
              
 -- Testing entire E_K component 
 E_K_FUNCTION_INSTANTIATION_TB : entity work.E_K
@@ -104,7 +96,16 @@ E_K_FUNCTION_INSTANTIATION_TB : entity work.E_K
                selDD => selInitial,
                enDD => enDD,
                D => D);
-               
+ 
+ -- Testing Add Constants Component
+
+--AC_INSTANTIATION : entity work.AddConstants
+--    port map(clk => clk,
+--             enRound => enAC,
+--             selInitial => selInitial,
+--             InS => InS,
+--             InS_p => InS_p);
+ 
 -- Since E_K function was instantiated with Testing = 1, we set Tweakey to a specific value which was shown
 -- in the Skinny-128-384+ test vector in Romulus v1.3 description, we also assign S to this same specified value 
            

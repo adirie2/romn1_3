@@ -58,10 +58,13 @@ port(
 end controller;
 
 architecture Behavioral of controller is
-type state is (idle, load_key, load_npub, wait_ad, load_ad, pad_ad, rho_ad, ek_ad, rho_ad_pad, ek_ad_pad, rho_final, ek_nonce, load_data, process_tag, output_tag, verify_tag
- -- output_data, process_tag, output_verify_tag
- );
+type state is (idle, load_key, load_npub, wait_ad, load_ad, pad_ad, rho_ad, ek_ad, rho_ad_pad, ek_ad_pad, rho_final, ek_nonce, load_data, process_tag, output_tag, verify_tag);
 signal state_reg, state_next : state;
+
+-- register to store bdi_valid bytes and output for when output of Data is passed through
+signal bdi_vb_reg : std_logic_vector(15 downto 0);
+signal bdi_vb_reg_next : std_logic_vector(3 downto 0);
+signal envb : std_logic;
 
 signal numB_s_next, numB_s : unsigned(55 downto 0);
 signal numB_s_vec : std_logic_vector(55 downto 0);
@@ -90,6 +93,18 @@ numB_s_vec <= std_logic_vector(numB_s);
 
 Len8 <= std_logic_vector(len8_s);
 
+
+-- process reg for storing bdi_type for message
+process(clk)
+begin
+    if rising_edge(clk) then
+        if envb = '1' then
+            bdi_vb_reg <= bdi_vb_reg(11 downto 0) & bdi_vb_reg_next;
+        end if;
+    end if;    
+end process;
+
+
 -- state register
 process(clk)
 begin
@@ -105,16 +120,18 @@ begin
             state_reg <= state_next;
             cnt_s <= cnt_s_next;
             numB_s <= numB_s_next;
+            
         end if;
     end if;
 end process;
 
 
 -- next state register
-process(state_reg, key_valid, bdi_valid, bdi_eoi, bdo_ready, bdi_eot)
+process(state_reg, key_valid, bdi_valid, bdi_eoi, bdo_ready, bdi_eot, cnt_s, bdi_vb_reg, decrypt_in, len8_s, E_done, numB_s_vec, numB_s, bdi_type)
     begin
     
     cnt_s_next <= cnt_s;
+    bdi_vb_reg_next <= (others => '0');
     key_ready <= '0';
     Bin <= (others => '0');
     enDD <= '0';
@@ -123,6 +140,7 @@ process(state_reg, key_valid, bdi_valid, bdi_eoi, bdo_ready, bdi_eot)
     enS <= '0';
     selT <= '0';
     selD <= '0';
+    enKey <= '0';
     
     case state_reg is
         
@@ -157,17 +175,21 @@ process(state_reg, key_valid, bdi_valid, bdi_eoi, bdo_ready, bdi_eot)
          when load_npub =>
                 bdi_ready <= '1';
                 if bdi_valid = '1' then
-                    if cnt_s = 4 then
-                        cnt_s_next <= 0;
-                        if bdi_eoi = '1' then
-                            state_next <= process_tag;
-                            -- need to look at this segment of code more closely
-                        else 
-                            state_next <= wait_ad;
+                    if bdi_type = HDR_NPUB then
+                        if cnt_s = 4 then
+                            cnt_s_next <= 0;
+                            if bdi_eoi = '1' then
+                                state_next <= process_tag;
+                                -- need to look at this segment of code more closely
+                            else 
+                                state_next <= wait_ad;
+                            end if;
+                        else
+                            cnt_s_next <= cnt_s + 1;
+                            enN <= '1';
+                            state_next <= load_npub;
                         end if;
                     else
-                        cnt_s_next <= cnt_s + 1;
-                        enN <= '1';
                         state_next <= load_npub;
                     end if;
                 else
@@ -193,7 +215,6 @@ process(state_reg, key_valid, bdi_valid, bdi_eoi, bdo_ready, bdi_eot)
                         numB_s_next <= numB_s + 1;
                         if numB_s_vec(0) = '1' then
                             state_next <= ek_ad;
-                            E_start <= '1';
                         else 
                             state_next <= rho_ad;
                         end if;
@@ -224,7 +245,6 @@ process(state_reg, key_valid, bdi_valid, bdi_eoi, bdo_ready, bdi_eot)
                         numB_s_next <= numB_s + 1;
                         if numB_S(0) = '1' then
                             state_next <= ek_ad_pad;
-                            E_start <= '1';
                         else
                             state_next <= rho_ad_pad;
                         end if;
@@ -236,7 +256,8 @@ process(state_reg, key_valid, bdi_valid, bdi_eoi, bdo_ready, bdi_eot)
                 end if;
             
          when ek_ad =>
-                Bin <= '0' & x"8";                                            
+                E_start <= '1';
+                Bin <= "01000";                                            
                 if E_done = '1' then
                     enDD <= '1';
                     state_next <= load_ad;
@@ -256,7 +277,20 @@ process(state_reg, key_valid, bdi_valid, bdi_eoi, bdo_ready, bdi_eot)
                     state_next <= load_ad;
                 end if;
          
+         when rho_ad_pad =>
+                if numB_S_vec = x"00000000000001" then
+                    selSR <= '1';
+                    enS <= '1';
+                    enDD <= '1';
+                    state_next <= rho_final;
+                else
+                    enS <= '1';
+                    enDD <= '1';
+                end if;
+         
          when ek_ad_pad =>
+                E_start <= '1';
+                Bin <= "01000";                                            
                 if E_done = '1' then
                     selMR <= '1';
                     enS <= '1';
@@ -268,12 +302,12 @@ process(state_reg, key_valid, bdi_valid, bdi_eoi, bdo_ready, bdi_eot)
          when rho_final =>
                 if len8_s = x"FF" then
                     E_start <= '1';
-                    Bin <= x"11000";
+                    Bin <= "11000";
                     selT <= '1';
                     state_next <= ek_nonce;
                 else
                     E_start <= '1';
-                    Bin <= x"11010";
+                    Bin <= "11010";
                     selT <= '1';
                     state_next <= ek_nonce;
                 end if;
@@ -319,8 +353,9 @@ process(state_reg, key_valid, bdi_valid, bdi_eoi, bdo_ready, bdi_eot)
                      
          when verify_tag =>
                 bdi_ready <= '1';
-                  
-                    
+                
+         when output_tag =>
+                cnt_s_next <= cnt_s;
     end case;
     
 end process;

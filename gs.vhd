@@ -38,8 +38,8 @@ end gs;
 
 architecture Behavioral of gs is
 begin
-GEN_G: for i in 0 to 6 generate
-    G_S(i+1) <= S(i);
+GEN_G: for i in 1 to 7 generate
+    G_S(i-1) <= S(i);
 end generate GEN_G;
-G_S(0) <= S(0) xor S(7);
+G_S(7) <= S(0) xor S(7);
 end Behavioral;

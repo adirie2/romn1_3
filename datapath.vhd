@@ -80,12 +80,13 @@ tag_verify <= '1' when Tag = Ci_T else '0';
 with selAM select
     AM_in <= bdi when "00",
              (others => '0') when "01",
-             x"000000" & Len8 when others;
+             x"000000" & Len8 when "10",
+             (others => '0') when others;
              
             
 
 -- AM_in <= bdi when selAM = '1' else (others => '0');
-M_in <= (others => '0') when selMR <= '1' else A_M;
+M_in <= A_M when selMR <= '0' else (others => '0');
 
 -- SIPO Register for Key K
 SIPO_K : process(clk)

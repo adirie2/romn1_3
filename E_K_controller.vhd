@@ -75,6 +75,7 @@ E_NEXT_STATE : process(cnt_s, state_reg, E_start)
                     enTK <= '1';
                     enRound <= '1';
                     enIS <= '1';
+                    cnt_s_next <= 0;
                     state_next <= E_before;
                 else
                     state_next <= E_idle;
@@ -83,13 +84,15 @@ E_NEXT_STATE : process(cnt_s, state_reg, E_start)
             when E_before =>
                 enAC <= '1';
                 state_next <= E_compute;
+                
             
             when E_compute =>
                 if cnt_s = 0 then
                    cnt_s_next <= cnt_s + 1;
                    state_next <= E_compute;
-                   enAC <= '1'; 
-                elsif cnt_s = 41 then
+                   enAC <= '1';
+                end if; 
+                if cnt_s = 40 then
                     state_next <= E_finish;
                 else
                     enRound <= '1';
