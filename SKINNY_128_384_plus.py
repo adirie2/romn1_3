@@ -19,7 +19,7 @@
 # 02110-1301, USA.
 
 # toggle debug printing (set DEBUG to 1)
-DEBUG = 1
+DEBUG = 0
 
 # Skinny-128-384+ Sbox
 S8 = [
@@ -77,8 +77,8 @@ TWEAK_LENGTH = 48
 
 # functions that implement the Skinny-128-384+ TBC encryption
 def skinny_enc(plaintext, tweakey):
-    if DEBUG==1: print("Plaintext = " + "".join("{:02X}".format(_) for _ in plaintext))
-    if DEBUG==1: print("Tweakey = " + "".join("{:02X}".format(_) for _ in tweakey))
+    # if DEBUG==1: print("Plaintext = " + "".join("{:02X}".format(_) for _ in plaintext))
+    # if DEBUG==1: print("Tweakey = " + "".join("{:02X}".format(_) for _ in tweakey))
     
     tk = [[0]*TWEAK_LENGTH]*(NB_ROUNDS+1)
 
@@ -184,9 +184,10 @@ def test_vectors(plaintext,key):
     pt = skinny_dec(ct,key)
     print("Decryption:   " + "".join('{:02x}'.format(_) for _ in pt))
 
+# x"0C0D0E0F", x"08090A0B", x"04050607", x"00010203"
 
 plaintext = [0xa3,0x99,0x4b,0x66,0xad,0x85,0xa3,0x45,0x9f,0x44,0xe9,0x2b,0x08,0xf5,0x50,0xcb]
 key = [0xdf,0x88,0x95,0x48,0xcf,0xc7,0xea,0x52,0xd2,0x96,0x33,0x93,0x01,0x79,0x74,0x49,0xab,0x58,0x8a,0x34,0xa4,0x7f,0x1a,0xb2,0xdf,0xe9,0xc8,0x29,0x3f,0xbe,0xa9,0xa5,0xab,0x1a,0xfa,0xc2,0x61,0x10,0x12,0xcd,0x8c,0xef,0x95,0x26,0x18,0xc3,0xeb,0xe8]
 
-skinny_enc(plaintext,key)
+# skinny_enc(plaintext,key)
 # skinny_enc([0] * 16, [0] * 48)
