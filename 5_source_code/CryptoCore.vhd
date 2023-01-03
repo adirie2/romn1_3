@@ -57,7 +57,7 @@ end CryptoCore;
 
 architecture Behavioral of CryptoCore is
 -- Intermediate Signals for Interface Division between Datapath and Controller
-signal control : control_t;
+-- signal control : control_t;
 signal status : status_t;
 
 signal in_bus : data_in_t;
@@ -66,6 +66,7 @@ signal out_bus : data_out_t;
 signal E_start : std_logic;
 signal E_done : std_logic;
 signal tag_verify : std_logic;
+signal bdo_i : std_logic_vector(31 downto 0);
 
 begin
 
@@ -76,10 +77,12 @@ end_of_block <= out_bus.status.end_of_block;
 key_ready <= out_bus.status.key_ready;
 msg_auth_valid <= out_bus.status.msg_auth_valid;
 msg_auth <= out_bus.status.msg_auth_valid;
+bdo <= bdo_i;
 
 
 
-control <= (bdi_valid => bdi_valid,
+in_bus <= (bdi => bdi,
+           control => (bdi_valid => bdi_valid,
             bdi_valid_bytes => bdi_valid_bytes,
             bdi_size => bdi_size,
             bdi_eot => bdi_eot,
@@ -89,10 +92,7 @@ control <= (bdi_valid => bdi_valid,
             key_valid => key_valid,
             key_update => key_update,
             bdo_ready => bdo_ready,
-            msg_auth_ready => msg_auth_ready);
-
-in_bus <= (bdi => bdi,
-           control => control);
+            msg_auth_ready => msg_auth_ready));
 
 
 INSTANTIATE_DATAPATH: entity work.RomNDatapath
@@ -103,7 +103,7 @@ INSTANTIATE_DATAPATH: entity work.RomNDatapath
               E_start => E_start,
               tag_verify => tag_verify,
               E_done => E_done,
-              bdo => bdo);
+              bdo => bdo_i);
               
 
 INSTANTIATE_CONTROLLER: entity work.RomNController

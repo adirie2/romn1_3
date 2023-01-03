@@ -57,7 +57,8 @@ begin
 -- Romulus N first 3 bits of vector B are zero
 B <= "000" & status.Bin;
 -- bdo 
-bdo <= Ci_T(N-1 downto 96);
+bdo <= Ci_T(N-1 downto 96) when status.selEmpty = '0' else (others => '0');
+-- bdo <= Ci_T(31 downto 0);
 -- Muxes
 S_Rin <= (others => '0') when status.selSR = '1' else S;
 T_in <= NN when status.selT = '1' else A_M;
@@ -82,6 +83,7 @@ SIPO_K : process(clk)
                 if rising_edge(clk) then 
                     if status.enKey = '1' then 
                         K <= key &  K(N-1 downto CCSW);
+--                        K <= K(N-33 downto 0) & key;                        
                     end if;
                 end if;
             
@@ -95,6 +97,7 @@ SIPO_AM : process(clk)
                 if rising_edge(clk) then
                     if status.enAM = '1' then
                         A_M <= AM_in & A_M(N-1 downto CCW);
+--                        A_M <= A_M(N-33 downto 0) & AM_in;
                     end if;
                 end if;
           end process SIPO_AM;
@@ -105,6 +108,7 @@ SIPO_NONCE : process(clk)
                     if rising_edge(clk) then
                         if status.enN = '1' then
                             NN <= bdi & NN(N-1 downto CCW);
+--                            NN <= NN(N-33 downto 0) & bdi;
                         end if;
                     end if;
              end process SIPO_NONCE;
@@ -136,7 +140,8 @@ PISO_Ci_T : process(clk)
                         if status.ldCi_T = '1' then
                             Ci_T <= Ci_T_in;    
                         elsif status.enCi_T = '1' then
-                            Ci_T <= Ci_T(N-33 downto 0) & x"00000000";
+                              Ci_T <= Ci_T(N-33 downto 0) & x"00000000";
+--                              Ci_T <= x"00000000" & Ci_T(N-1 downto 32);
                         end if;
                     end if;
                             

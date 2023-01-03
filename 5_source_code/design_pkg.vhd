@@ -116,6 +116,7 @@ package design_pkg is
         selD : std_logic;
         selT : std_logic;
         selS : std_logic;
+        selEmpty : std_logic;
         -- Load Signals
         ldCi_T : std_logic;
         -- Skinny Domain Encoding
@@ -131,7 +132,7 @@ package design_pkg is
     end record data_in_t;
 
     type data_out_t is record
-        bdo : std_logic_vector(31 downto 0);
+        -- bdo : std_logic_vector(31 downto 0);
         status : status_t;
     end record data_out_t;
 
@@ -172,8 +173,10 @@ package design_pkg is
     last_valid : integer range 0 to 4;
     end_of_ad : std_logic;
     ad_partial : std_logic;
+    ad_empty : std_logic;
     end_of_input : std_logic;
     message_partial : std_logic;
+    message_empty : std_logic;
     data_bytes : std_logic_vector(3 downto 0);
     is_odd : std_logic;
     initial: std_logic;

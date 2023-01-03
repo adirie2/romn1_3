@@ -30,18 +30,15 @@ begin
                 reg_s.last_valid <= 0;
                 reg_s.end_of_ad <= '0';
                 reg_s.ad_partial <= '0';
+                reg_s.ad_empty <= '0';
                 reg_s.end_of_input <= '0';
                 reg_s.message_partial <= '0';
+                reg_s.message_empty <= '0';
                 reg_s.data_bytes <= "1111";
                 reg_s.is_odd <= '1';
                 reg_s.initial <= '1';
                 reg_s.state <= IDLE;
                 
-                --Initialize LFSR D
-                out_bus.status.selD <= '1';
-                out_bus.status.enDD <= '1';
-
-
             else
                 reg_s <= next_reg_s;
             end if;
@@ -50,7 +47,7 @@ begin
     end process;
     
     -- Main FSM
-    wombocombo : process(all)
+    wombocombo : process(reg_s, in_bus.control, tag_verify, E_done)
         variable reg_nx : registers_t;
     begin
         reg_nx := reg_s;
@@ -78,6 +75,7 @@ begin
         out_bus.status.selD <= '0';
         out_bus.status.selT <= '0';
         out_bus.status.selS <= '0';
+        out_bus.status.selEmpty <= '0';
         out_bus.status.ldCi_T <= '0';
         out_bus.status.Bin <= (others => '0');
         out_bus.status.ctr_words <= (others => '0');
@@ -88,10 +86,20 @@ begin
             if (in_bus.control.key_valid = '1') then
                 if (in_bus.control.key_update = '1') then
                     reg_nx.state := LOAD_KEY;
+                    --Initialize LFSR D
+                    out_bus.status.selD <= '1';
+                    out_bus.status.enDD <= '1';
                 end if;
-            end if;
-            if (in_bus.control.bdi_valid = '1') then
+            elsif (in_bus.control.bdi_valid = '1') then
+--                if (in_bus.control.bdi_type = c_encoding_t.HDR_AD) then
+--                    reg_nx.state := LOAD_AD;
+--                elsif (in_bus.control.bdi_type = c_encoding_t.HDR_MSG) then
+--                    reg_nx.state := LOAD_DATA;
+--                end if;
+--               if (in_bus.control.bdi_type = c_encoding_t.HDR_NPUB) then
                 reg_nx.state := LOAD_NPUB;
+--               end if;
+            
             end if;
             when LOAD_KEY => 
             out_bus.status.key_ready <= '1';
@@ -99,34 +107,61 @@ begin
                 out_bus.status.enKey <= '1';
                 if(reg_s.gen_cnt = c_encoding_t.NUM_WORDS) then
                     reg_nx.gen_cnt := 0;
-                    reg_nx.state := IDLE;
+                    reg_nx.state := WAIT_AD;
                 else
-                    reg_nx.gen_cnt := reg_nx.gen_cnt + 1;
+                    reg_nx.gen_cnt := reg_s.gen_cnt + 1;
                     reg_nx.state := LOAD_KEY;
                 end if;
-            else
-                reg_nx.state := LOAD_KEY;
             end if;
             when LOAD_NPUB =>
+             if (reg_s.initial = '1') then
+                    --Initialize LFSR D
+                    -- out_bus.status.selD <= '1';
+                    --out_bus.status.enDD <= '1';
+
+                    out_bus.status.selSR <= '1';
+                    out_bus.status.selS <= '1';
+                    out_bus.status.enS <= '1';
+                    reg_nx.is_odd := '1';
+                    reg_nx.initial := '0';
+             end if;
             out_bus.status.bdi_ready <= '1';
             if (in_bus.control.bdi_valid = '1') then
                 out_bus.status.enN <= '1';
                 if (reg_s.gen_cnt = c_encoding_t.NUM_WORDS) then
                     reg_nx.gen_cnt := 0;
-                    reg_nx.state := WAIT_AD;
+                    reg_nx.state := PROC_AD;
+                --    if (in_bus.control.bdi_eoi = '1') then
+--                        reg_nx.ad_empty := '1';
+--                        reg_nx.end_of_ad := '1';
+                        reg_nx.message_empty := '1';
+                        reg_nx.end_of_input := '1';
+                        -- reg_nx.state := PROC_AD; -- basically when this happens empty message and associated data
+          --          elsif(reg_nx.end_of_input = '1') then
+          --              reg_nx.state := PAD_DATA;
+         --           else
+          --              reg_nx.state := LOAD_DATA;
+          --          end if;
                 else
-                    reg_nx.gen_cnt := reg_nx.gen_cnt + 1;
+                    reg_nx.gen_cnt := reg_s.gen_cnt + 1;
                     reg_nx.state := LOAD_NPUB;
                 end if;
-            else
-                reg_nx.state := LOAD_NPUB;
             end if;
             when WAIT_AD =>
-            
             if (in_bus.control.bdi_type = c_encoding_t.HDR_AD) then
-                reg_nx.state := LOAD_DATA;
-            else
                 reg_nx.state := LOAD_AD;
+                if (in_bus.control.bdi_eoi = '1') then
+                reg_nx.message_empty := '1';
+                reg_nx.end_of_input := '1';
+                reg_nx.state := PAD_AD;
+                end if;
+                if (in_bus.control.bdi_eot = '1') then
+                reg_nx.ad_empty := '1';
+                reg_nx.end_of_ad := '1';
+                reg_nx.state := PAD_AD; -- basically when this associated data is empty
+                end if;
+            else
+                reg_nx.state := WAIT_AD;
             end if;
             when LOAD_AD =>
             out_bus.status.bdi_ready <= '1';
@@ -134,6 +169,7 @@ begin
             if (in_bus.control.bdi_valid = '1') then
                 out_bus.status.enAM <= '1';
                 if (in_bus.control.bdi_eoi = '1') then
+                    reg_nx.message_empty := '1';
                     reg_nx.end_of_input := '1';
                 end if;
                 if (in_bus.control.bdi_eot = '1') then
@@ -142,12 +178,12 @@ begin
                         -- out_bus.status.enAM <= '0';
                         out_bus.status.selAM <= "11"; -- for this case we need to implement in the mux for the pad to include 0's 
                         reg_nx.gen_cnt := 0;
-                        reg_nx.state := PROC_AD;
+                        reg_nx.state := LOAD_NPUB;
                         reg_nx.last_valid := reg_s.gen_cnt;
                         out_bus.status.ctr_words <= "100";
                         out_bus.status.data_bytes <= in_bus.control.bdi_valid_bytes;
                     else
-                        reg_nx.last_valid := reg_nx.gen_cnt;
+                        reg_nx.last_valid := reg_s.gen_cnt;
                         reg_nx.data_bytes := in_bus.control.bdi_valid_bytes;
                         reg_nx.ad_partial := '1';
                         -- if (bdi_eoi = '1') then
@@ -157,17 +193,52 @@ begin
                     end if;
                 elsif (reg_s.gen_cnt = c_encoding_t.NUM_WORDS) then
                     reg_nx.gen_cnt := 0;
-                    reg_nx.state := PROC_AD;
+                    reg_nx.state := LOAD_NPUB;
                 else
-                    reg_nx.gen_cnt := reg_nx.gen_cnt + 1;
+                    reg_nx.gen_cnt := reg_s.gen_cnt + 1;
                     reg_nx.state := LOAD_AD;
                 end if;
+            elsif(in_bus.control.bdi_eot = '1') then
+                reg_nx.last_valid := reg_s.gen_cnt;
+                reg_nx.data_bytes := in_bus.control.bdi_valid_bytes;
+                reg_nx.ad_partial := '1';
+                -- if (bdi_eoi = '1') then
+                -- reg_nx.end_of_input := 1;
+                -- end if;
+                reg_nx.state := PAD_AD;
             end if;
             when PAD_AD =>
-                if (reg_s.gen_cnt = c_encoding_t.MAX_WORDS) then
+                if (in_bus.control.bdi_eoi = '1') then
+                    -- if (in_bus.control.bdi_pad_loc = "0000") then
+   
+                    reg_nx.message_empty := '1';
+                    reg_nx.end_of_input := '1';
+                end if;
+                if (in_bus.control.bdi_eot = '1') then
+                    reg_nx.end_of_ad := '1';
+                end if;
+                
+                if (reg_s.ad_empty = '1') then
+                    if(reg_s.gen_cnt = c_encoding_t.MAX_WORDS) then
+                        out_bus.status.enAM <= '0';
+                        reg_nx.gen_cnt := 0;
+                        reg_nx.state := LOAD_NPUB;
+                        -- out_bus.status.enDD <= '1';
+                    else
+                        out_bus.status.enAM <= '1';
+                        out_bus.status.selAM <= "01"; -- pad blocks with zeros until last block w/ encoding
+                        reg_nx.gen_cnt := reg_s.gen_cnt + 1;
+                        reg_nx.state := PAD_AD;
+                    end if;
+                elsif (reg_s.gen_cnt = c_encoding_t.MAX_WORDS) then
                     out_bus.status.enAM <= '0';
                     reg_nx.gen_cnt := 0;
-                    reg_nx.state := PROC_AD;
+                    reg_nx.state := LOAD_NPUB;
+                    if (reg_s.end_of_ad = '1') then
+                        if (reg_s.is_odd = '1') then
+                            out_bus.status.enDD <= '1';
+                        end if;
+                    end if;
                 elsif (reg_s.gen_cnt = c_encoding_t.NUM_WORDS) then
                     out_bus.status.enAM <= '1';
                     out_bus.status.selAM <= "10"; -- case of padding with 0s plus encoding
@@ -197,18 +268,6 @@ begin
                 if (E_done = '1') then
                     E_start <= '0';
                 end if;
-                if (reg_s.initial = '1') then
-                    --Initialize LFSR D
-                    -- out_bus.status.selD <= '1';
-                    -- out_bus.status.enDD <= '1';
-
-                    out_bus.status.selSR <= '1';
-                    out_bus.status.selS <= '1';
-                    out_bus.status.enS <= '1';
-                    reg_nx.is_odd := '1';
-                    reg_nx.initial := '0';
-                    reg_nx.state := LOAD_AD;
-                end if;
                 if (E_done = '1') then 
                     E_start <= '0';
                     out_bus.status.selS <= '0';
@@ -228,12 +287,28 @@ begin
                     out_bus.status.selS <= '1';
                     out_bus.status.enS <= '1';
                     reg_nx.is_odd := '0';
-                    if (reg_s.end_of_ad = '1') then
+                    if (reg_s.end_of_ad = '0') then
                         reg_nx.state := LOAD_AD;
                     else
                         reg_nx.state := PROC_AD_N;
                     -- Increment LFSR
                     out_bus.status.enDD <= '1';
+                    end if;
+                end if;
+                if (reg_s.initial = '1') then
+                    --Initialize LFSR D
+                    -- out_bus.status.selD <= '1';
+                    --out_bus.status.enDD <= '1';
+
+                    out_bus.status.selSR <= '1';
+                    out_bus.status.selS <= '1';
+                    out_bus.status.enS <= '1';
+                    reg_nx.is_odd := '1';
+                    reg_nx.initial := '0';
+                    if (reg_s.end_of_ad = '0') then
+                        reg_nx.state := LOAD_AD;
+                    else
+                        reg_nx.state := PROC_AD_N;
                     end if;
                 end if;
             when PROC_LAST_AD =>
@@ -247,6 +322,8 @@ begin
             out_bus.status.selT <= '1'; -- AD as input instead of AD or M.
             if(reg_s.ad_partial = '1') then
                 out_bus.status.Bin <= "11010"; -- Bin is 26 when the last block is partial
+            elsif(reg_s.ad_empty = '1') then
+                out_bus.status.Bin <= "11010"; -- Bin is 26 when the last block is empty
             else
                 out_bus.status.Bin <= "11000"; -- Bin is 24 when the last block is full
             end if;
@@ -258,7 +335,11 @@ begin
                 out_bus.status.selD <= '1';
                 out_bus.status.enDD <= '1';
                 reg_nx.is_odd := '1';
-                reg_nx.state := LOAD_DATA;
+                if (reg_s.message_empty = '1') then
+                    reg_nx.state := PAD_DATA;
+                else
+                    reg_nx.state := LOAD_DATA;
+                end if;
             end if;
             when LOAD_DATA => 
             out_bus.status.bdi_ready <= '1';
@@ -299,7 +380,22 @@ begin
                 end if;
             end if;
             when PAD_DATA =>
-            if (reg_s.gen_cnt = c_encoding_t.MAX_WORDS) then
+            if (in_bus.control.bdi_eot = '1') then
+                reg_nx.end_of_input := '1';
+            end if;
+            
+            if (reg_s.message_empty = '1') then
+                if (reg_s.gen_cnt = c_encoding_t.MAX_WORDS) then
+                    out_bus.status.enAM <= '0';
+                    reg_nx.gen_cnt := 0;
+                    reg_nx.state := PROC_DATA;
+                else
+                    out_bus.status.enAM <= '1';
+                    out_bus.status.selAM <= "01"; -- pad blocks with zeros until last block w/ encoding
+                    reg_nx.gen_cnt := reg_s.gen_cnt + 1;
+                    reg_nx.state := PAD_DATA;
+                end if;
+            elsif (reg_s.gen_cnt = c_encoding_t.MAX_WORDS) then
                 out_bus.status.enAM <= '0';
                 reg_nx.gen_cnt := 0;
                 reg_nx.state := PROC_DATA;
@@ -341,16 +437,16 @@ begin
             out_bus.status.enDD <= '1';
             when PROC_DATA_N =>
             if (reg_s.is_odd  = '0') then
-            E_start <= '1';
             reg_nx.is_odd := '1';
             end if;
+            E_start <= '1';
             out_bus.status.selT <= '1'; -- AD as input instead of AD or M.
             out_bus.status.Bin <= '0' & x"4"; -- Bin is 4 for M/Ci other than last block
             if (E_done = '1') then
                 E_start <= '0';
                 out_bus.status.selS <= '0';
                 out_bus.status.enS <= '1';
-                reg_nx.state := OUTPUT_DATA;
+                reg_nx.state := PROC_TAG;
             end if;
             when PROC_LAST_DATA => 
             if (reg_s.is_odd = '0') then
@@ -360,6 +456,8 @@ begin
             out_bus.status.selT <= '1'; -- AD as input instead of AD or M.
             if(reg_s.message_partial = '1') then
                 out_bus.status.Bin <= "10101"; -- Bin is 21 when the last block is partial
+            elsif(reg_s.message_empty = '1') then
+                out_bus.status.Bin <= "10101"; -- Bin is 21 when the last block is empty
             else
                 out_bus.status.Bin <= "10100"; -- Bin is 20 when the last block is full
             end if;
@@ -367,25 +465,45 @@ begin
                 E_start <= '0';
                 out_bus.status.selS <= '0';
                 out_bus.status.enS <= '1';
-                reg_nx.state := OUTPUT_DATA;
+               -- if(reg_s.message_empty = '0') then
+                    reg_nx.state := OUTPUT_DATA;
+           --     else
+            --        reg_nx.state := PROC_TAG;
+            --    end if;
             end if;
             when OUTPUT_DATA =>
             out_bus.status.bdo_valid <= '1';
             out_bus.status.bdo_valid_bytes <= (others => '1');
+            if (reg_s.message_empty = '1') then 
+               -- out_bus.status.bdo_valid_bytes <= (others => '0');
+               -- out_bus.status.selEmpty <= '1';
+            end if;
             if (in_bus.control.bdo_ready = '1') then
-                out_bus.status.enCi_T <= '1'; -- iterate through PISO
-                if (reg_s.gen_cnt = reg_s.last_valid) then
+                if (reg_s.gen_cnt /= 0) then
+                    out_bus.status.enCi_T <= '1'; -- iterate through PISO
+                end if;
+                if (reg_s.message_empty = '1') then 
+                    out_bus.status.bdo_valid_bytes <= (others => '1');
+                    -- out_bus.status.selEmpty <= '1';
+                    if (reg_s.gen_cnt = c_encoding_t.NUM_WORDS) then
+                        reg_nx.gen_cnt := 0;
+                        reg_nx.state := PROC_DATA_N;
+                    else
+                        reg_nx.gen_cnt := reg_s.gen_cnt + 1;
+                        reg_nx.state := OUTPUT_DATA;
+                    end if;
+                elsif (reg_s.gen_cnt = reg_s.last_valid) then
                     reg_nx.gen_cnt := 0;
                     if (reg_s.message_partial = '1') then
                         out_bus.status.bdo_valid_bytes <= reg_s.data_bytes;
                     end if;
                     if (reg_s.end_of_input = '1') then
-                        reg_nx.state := PROC_TAG;
+                        reg_nx.state := PROC_DATA_N;
                     else
                         reg_nx.state := LOAD_DATA;
                     end if;
                 else
-                    reg_nx.gen_cnt := reg_nx.gen_cnt + 1;
+                    reg_nx.gen_cnt := reg_s.gen_cnt + 1;
                     reg_nx.state := OUTPUT_DATA;
                 end if;
             else
@@ -393,11 +511,11 @@ begin
             end if;
             when PROC_TAG =>
             out_bus.status.selMR <= '1';
+            out_bus.status.ldCi_T <= '1';
             if(in_bus.control.decrypt_in = '1') then
-                out_bus.status.ldCi_T <= '1';
-                reg_nx.state := OUTPUT_TAG;
-            else
                 reg_nx.state := VERIFY_TAG;
+            else
+                reg_nx.state := OUTPUT_TAG;
             end if;
             when OUTPUT_TAG =>
             out_bus.status.bdo_valid <= '1';
@@ -408,7 +526,7 @@ begin
                     reg_nx.gen_cnt := 0;
                     reg_nx.state := IDLE;
                 else
-                    reg_nx.gen_cnt := reg_nx.gen_cnt + 1;
+                    reg_nx.gen_cnt := reg_s.gen_cnt + 1;
                     reg_nx.state := OUTPUT_TAG;
                 end if;
             else
@@ -422,7 +540,7 @@ begin
                     reg_nx.gen_cnt := 0;
                     reg_nx.state := TAG_ACK;
                 else
-                    reg_nx.gen_cnt := reg_nx.gen_cnt + 1;
+                    reg_nx.gen_cnt := reg_s.gen_cnt + 1;
                     reg_nx.state := VERIFY_TAG;
                 end if;
             else
