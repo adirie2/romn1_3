@@ -144,5 +144,4 @@ The current pdfs and other files (except for VHDL) outline results/assumptions/v
 │   ├── __synthesis_is_complete__
 │   ├── vivado.jou
 │   └── vivado.pb
-└── weirdvivadoerror.txt
 ```

@@ -22,6 +22,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
+use work.design_pkg.all;
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 --use IEEE.NUMERIC_STD.ALL;
@@ -33,18 +34,15 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity CryptoCore is
 --  Port ( );
-generic(CCSW : INTEGER := 32;
-        CCW : INTEGER := 32;
-        CCWdiv8 : INTEGER := 4);
 port(
      clk, rst : in STD_LOGIC;
      -- INPUTS FROM PRE PROCESSOR
      key : in STD_LOGIC_VECTOR(CCSW-1 downto 0);
-     key_valid, bdi_valid, bdi_eot, bdi_eoi, decrypt_in, key_update : in STD_LOGIC;
+     key_valid, bdi_valid, bdi_eot, bdi_eoi, decrypt_in, hash_in, key_update : in STD_LOGIC;
      bdi : in STD_LOGIC_VECTOR(CCW-1 downto 0);
      bdi_type : in STD_LOGIC_VECTOR(3 downto 0);
      bdi_valid_bytes, bdi_pad_loc : in STD_LOGIC_VECTOR(CCWdiv8-1 downto 0);
-     bdi_size : in STD_LOGIC_VECTOR(CCWdiv8 downto 0);
+     bdi_size : in STD_LOGIC_VECTOR(2 downto 0);
      -- OUTPUTS TO PRE PROCESSOR
      key_ready, bdi_ready : out STD_LOGIC;
      -- OUTPUTS TO POST PROCESSOR
@@ -59,114 +57,62 @@ end CryptoCore;
 
 architecture Behavioral of CryptoCore is
 -- Intermediate Signals for Interface Division between Datapath and Controller
-signal Bin : std_logic_vector(4 downto 0);
+signal control : control_t;
+signal status : status_t;
+
+signal in_bus : data_in_t;
+signal out_bus : data_out_t;
+
 signal E_start : std_logic;
-signal selS, selSR, selD, selT, selMR : std_logic;
-signal selAM : std_logic_vector(1 downto 0);
-signal enKey, enAM, enN, enS, enDD, enCi_T, enTag : std_logic;
-signal ldCi_T : std_logic;
 signal E_done : std_logic;
 signal tag_verify : std_logic;
-signal len8 : std_logic_vector(7 downto 0);
--- Intermediate Signals to avoid signal assignment of output appearing on right hand side of signal assignment
-signal bdo_i : std_logic_vector(CCW-1 downto 0);
-signal bdo_type_i : std_logic_vector(3 downto 0);
-signal bdo_valid_bytes_i : std_logic_vector(CCWdiv8-1 downto 0);
-signal bdo_valid_i, end_of_block_i, msg_auth_i, msg_auth_valid_i , bdi_ready_i: std_logic;
+
 begin
-bdo <= bdo_i;
-bdo_type <= bdo_type_i;
-bdo_valid_bytes <= bdo_valid_bytes_i;
-bdo_valid <= bdo_valid_i;
-end_of_block <= end_of_block_i;
-msg_auth <= msg_auth_i;
-msg_auth_valid <= msg_auth_valid_i;
-bdi_ready <= bdi_ready_i;
--- Instantiate Datapath
 
---clk : in STD_LOGIC;
---      -- INPUTS FROM CRYPTO CORE
---      key : in STD_LOGIC_VECTOR(CCSW-1 downto 0);
---      bdi: in STD_LOGIC_VECTOR(CCW-1 downto 0);
---      bdi_valid_bytes, bdi_pad_loc : in STD_LOGIC_VECTOR(CCWdiv8-1 downto 0);
---      -- INPUTS FROM CONTROLLER
---      E_start : in STD_LOGIC;
---      selDD, selS, selSR, selD, selT, selAM, selMR : in STD_LOGIC;
---      enKey, enAM, enN, enS, enDD, enCi_T, enTag : in STD_LOGIC;
---      Bin : in STD_LOGIC_VECTOR(4 downto 0);
---      ldCi_T : in STD_LOGIC;
---      -- OUTPUTS INTO CONTROLLER
---      E_done : out STD_LOGIC;
---      -- OUTPUTS INTO CRYPTOCORE
---      bdo : out STD_LOGIC_VECTOR(CCW-1 downto 0)
+bdi_ready <= out_bus.status.bdi_ready;
+bdo_valid <= out_bus.status.bdo_valid;
+bdo_valid_bytes <= out_bus.status.bdo_valid_bytes;
+end_of_block <= out_bus.status.end_of_block;
+key_ready <= out_bus.status.key_ready;
+msg_auth_valid <= out_bus.status.msg_auth_valid;
+msg_auth <= out_bus.status.msg_auth_valid;
 
-INSTANTIATE_DATAPATH: entity work.datapath
-    port map (
-              clk => clk,
+
+
+control <= (bdi_valid => bdi_valid,
+            bdi_valid_bytes => bdi_valid_bytes,
+            bdi_size => bdi_size,
+            bdi_eot => bdi_eot,
+            bdi_eoi => bdi_eoi,
+            bdi_type => bdi_type,
+            decrypt_in => decrypt_in,
+            key_valid => key_valid,
+            key_update => key_update,
+            bdo_ready => bdo_ready,
+            msg_auth_ready => msg_auth_ready);
+
+in_bus <= (bdi => bdi,
+           control => control);
+
+
+INSTANTIATE_DATAPATH: entity work.RomNDatapath
+    port map (clk => clk,
               key => key,
               bdi => bdi,
-              -- bdi_pad_loc => bdi_pad_loc,
-              len8 => len8,
-              bdo => bdo,
-              Bin => Bin,
-              ldCi_T => ldCi_T,
+              status => out_bus.status,
               E_start => E_start,
-              selS => selS,
-              selSR => selSR,
-              selD => selD,
-              selT => selT,
-              selAM => selAM,
-              selMR => selMR,
-              enKey => enKey,
-              enAM => enAM,
-              enN => enN,
-              enS => enS,
-              enDD => enDD,
-              enCi_T => enCi_T,
-              enTag => enTag,
-              E_done => E_done,
-              tag_verify => tag_verify);
-              
-
-INSTANTIATE_CONTROLLER: entity work.controller
-    port map (
-              clk => clk,
-              rst => rst,
-              bdi_type => bdi_type,
-              msg_auth_ready => msg_auth_ready,
-              decrypt_in => decrypt_in,
-              bdi_eoi => bdi_eoi,
-              bdi_eot => bdi_eot,
-              bdo_ready => bdo_ready,
-              key_update => key_update,
-              key_valid => key_valid,
-              key_ready => key_ready,
-              bdi_valid => bdi_valid,
-              end_of_block => end_of_block,
-              bdo_valid => bdo_valid,
-              msg_auth => msg_auth,
-              msg_auth_valid => msg_auth_valid,
-              bdi_ready => bdi_ready,
-              bdo_type => bdo_type,
-              bdo_valid_bytes => bdo_valid_bytes,
-              Bin => Bin,
-              E_start => E_start,
-              ldCi_T => ldCi_T,
-              selS => selS,
-              selSR => selSR,
-              selD => selD,
-              selT => selT,
-              selAM => selAM,
-              selMR => selMR,
-              enKey => enKey,
-              enAM => enAM,
-              enN => enN,
-              enS => enS,
-              enDD => enDD,
-              enCi_T => enCi_T,
-              enTag => enTag,
               tag_verify => tag_verify,
               E_done => E_done,
-              len8 => len8);
+              bdo => bdo);
+              
+
+INSTANTIATE_CONTROLLER: entity work.RomNController
+    port map (clk => clk,
+              rst => rst,
+              in_bus => in_bus,
+              out_bus => out_bus,
+              E_start => E_start,
+              E_done => E_done,
+              tag_verify => tag_verify);
 
 end Behavioral;

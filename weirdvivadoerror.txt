@@ -1,0 +1,26 @@
+#--------------------------------------------------------------------------
+# Xilinx Vivado v2020.2 (64-bit)
+# SW Build: 3064766 on Wed Nov 18 09:12:47 MST 2020
+# IP Build: 3064653 on Wed Nov 18 14:17:31 MST 2020
+# Current time: Sat Dec 18 21:14:47 EST 2021
+# Process ID (PID): 250012
+# Project: romulus_n_v1_3_initial
+# Part: xc7a35tcsg324-1
+#
+# This report is an indication that an internal application error occurred.
+# This information is useful for debugging. Please open a case with Xilinx.
+# Technical Support with this file and a testcase attached.
+#--------------------------------------------------------------------------
+java.lang.NullPointerException
+	at ui.dlg.project.c.b.b.<init>(SourceFile:126)
+	at ui.dlg.J.a.ck.gAK(SourceFile:43)
+	at ui.dlg.J.a.bKF(SourceFile:86)
+	at ui.dlg.J.d.uh(SourceFile:562)
+	at ui.dlg.J.d.gBd(SourceFile:960)
+	at ui.dlg.J.d.gBl(SourceFile:1168)
+	at ui.dlg.J.d.aY(SourceFile:193)
+	at ui.dlg.J.d.<init>(SourceFile:135)
+	at ui.views.c.dC.O(SourceFile:112)
+	at ui.cU.aOt(SourceFile:866)
+	at ui.frmwork.y.run(SourceFile:203)
+	at java.base/java.lang.Thread.run(Thread.java:834)
